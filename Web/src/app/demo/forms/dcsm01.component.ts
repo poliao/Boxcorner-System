@@ -5,18 +5,17 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 
 import { AuthService } from 'src/app/services/auth.service';
-import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-docsystem',
   imports: [RouterModule, ReactiveFormsModule, CommonModule],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  templateUrl: './dcsm01.component.html',
+  styleUrls: ['./dcsm01.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class Dcsm01Component implements OnInit {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private sweetAlert: SweetAlertService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -28,13 +27,6 @@ export class LoginComponent implements OnInit {
    
   }
 
-  onPasswordKeyPress(event: KeyboardEvent) {
-    const char = String.fromCharCode(event.which);
-    if (!/[A-Za-z0-9]/.test(char)) {
-      event.preventDefault();
-    }
-  }
-
   onSubmit() {
     if (this.loginForm.value != null) {
       const { username, password } = this.loginForm.value;
@@ -42,13 +34,13 @@ export class LoginComponent implements OnInit {
       this.authService.login({ username, password }).subscribe({
         next: (response) => {
           console.log('Login successful:', response);
-          this.sweetAlert.success('Login', 'Login successful!');
           this.router.navigate(['/default']);
         },
         error: (error) => {
-          this.sweetAlert.error('Login', 'Login failed!');
+          console.error('Login failed:', error);
         }
       });
     }
   }
+
 }

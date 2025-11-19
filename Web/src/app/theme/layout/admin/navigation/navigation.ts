@@ -40,17 +40,16 @@ export const NavigationItems: NavigationItem[] = [
     icon: 'icon-navigation',
     children: [
       {
-        id: 'Authentication',
-        title: 'Authentication',
+        id: 'Doc',
+        title: 'เอกสาร',
         type: 'collapse',
-        icon: 'ti ti-key',
+        icon: 'ti ti-license',
         children: [
           {
-            id: 'login',
-            title: 'Login',
+            id: 'docsystem',
+            title: 'docsystem',
             type: 'item',
-            url: '/login',
-            target: true,
+            url: '/docsystem',
             breadcrumbs: false
           },
           {

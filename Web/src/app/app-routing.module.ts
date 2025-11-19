@@ -30,6 +30,10 @@ const routes: Routes = [
       {
         path: 'sample-page',
         loadComponent: () => import('./demo/other/sample-page/sample-page.component').then((c) => c.SamplePageComponent)
+      },
+      {
+        path: 'docsystem',
+        loadComponent: () => import('./demo/forms/dcsm01.component').then((c) => c.Dcsm01Component)
       }
     ]
   },
@@ -41,10 +45,6 @@ const routes: Routes = [
         path: 'login',
         loadComponent: () => import('./demo/pages/authentication/login/login.component').then((c) => c.LoginComponent)
       },
-      {
-        path: 'register',
-        loadComponent: () => import('./demo/pages/authentication/register/register.component').then((c) => c.RegisterComponent)
-      }
     ]
   }
 ];
