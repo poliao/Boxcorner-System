@@ -15,6 +15,7 @@ public class JwtUtils {
     // Secret Key ควรเก็บใน application.properties และต้องยาวพอสมควร (32 chars+)
     private final String SECRET_KEY = "MySuperSecretKeyForCameraRentalProjectWhichIsVerySecure";
     private final long EXPIRATION_TIME = 86400000; // 1 วัน (Milliseconds)
+    // private final long EXPIRATION_TIME = 600000; //10 นาที
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));

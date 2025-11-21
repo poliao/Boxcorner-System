@@ -1,35 +1,112 @@
-<div class="card-body">
-  <div class="card total-income-card warning overflow-hidden">
-    <div class="position">
-      <button type="button" class="btn btn-primary">บันทึก</button>
+
+  <h2>พนักงาน</h2>
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>รหัสพนักงาน, ชื่อ, บริษัท</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput (keyup)="applyFilter($event)" placeholder="ค้นหา...">
+    </mat-form-field>
+
+    <button (click)="add()" mat-flat-button color="primary" class="add-btn">
+      <mat-icon>add_circle</mat-icon> เพิ่ม
+    </button>
+  </div>
+
+  <div class="mat-elevation-z2">
+    <!-- Desktop Table -->
+    <div class="desktop-table card total-income-card warning overflow-hidden">
+      <table mat-table [dataSource]="dataSource" 
+             style="border-collapse: collapse; border: 2px solid #ddd; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef 
+              style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;"> รหัสพนักงาน </th>
+          <td mat-cell *matCellDef="let row" class="col-id" 
+              style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center; cursor: pointer; color: #171851; text-decoration: underline;"
+              (click)="goToDetail(row.id)"> {{row.id}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef 
+              style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;"> ชื่อพนักงาน </th>
+          <td mat-cell *matCellDef="let row" 
+              style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;"> {{row.name}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="company">
+          <th mat-header-cell *matHeaderCellDef 
+              style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;"> บริษัท </th>
+          <td mat-cell *matCellDef="let row" 
+              style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;"> {{row.company}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="departmentUnit">
+          <th mat-header-cell *matHeaderCellDef 
+              style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;"> สังกัดหน่วยงาน </th>
+          <td mat-cell *matCellDef="let row" 
+              style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;"> {{row.departmentUnit}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lineOfWork">
+          <th mat-header-cell *matHeaderCellDef 
+              style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;"> สายงาน </th>
+          <td mat-cell *matCellDef="let row" 
+              style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;"> {{row.lineOfWork}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="division">
+          <th mat-header-cell *matHeaderCellDef 
+              style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;"> ฝ่าย </th>
+          <td mat-cell *matCellDef="let row" 
+              style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;"> {{row.division}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="section">
+          <th mat-header-cell *matHeaderCellDef 
+              style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;"> แผนก </th>
+          <td mat-cell *matCellDef="let row" 
+              style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;"> {{row.section}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
+        <tr mat-row *matRowDef="let row; columns: getDisplayedColumns();"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="getDisplayedColumns().length">ไม่พบข้อมูลที่ค้นหา</td>
+        </tr>
+      </table>
     </div>
-    <div class="padding">
-      <div class="row">
-        <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+
+    <!-- Mobile Cards -->
+    <div class="mobile-cards">
+      <div class="employee-card" *ngFor="let employee of dataSource.filteredData">
+        <div class="card-header">
+          <span class="employee-id">{{employee.id}}</span>
         </div>
-        <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-        </div>
-        <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-        </div>
-        <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-        </div>
-        <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-        </div>
-        <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+        <div class="card-content">
+          <div class="employee-name">{{employee.name}}</div>
+          <div class="employee-info">
+            <div class="info-item">
+              <span class="label">บริษัท:</span>
+              <span class="value">{{employee.company}}</span>
+            </div>
+            <div class="info-item" *ngIf="employee.departmentUnit !== '-'">
+              <span class="label">สังกัด:</span>
+              <span class="value">{{employee.departmentUnit}}</span>
+            </div>
+            <div class="info-item" *ngIf="employee.lineOfWork !== '-'">
+              <span class="label">สายงาน:</span>
+              <span class="value">{{employee.lineOfWork}}</span>
+            </div>
+          </div>
         </div>
       </div>
+      <div class="no-data" *ngIf="dataSource.filteredData.length === 0">
+        ไม่พบข้อมูลที่ค้นหา
+      </div>
     </div>
+
+    <mat-paginator [pageSizeOptions]="[10, 20, 50]"
+                   showFirstLastButtons
+                   aria-label="Select page of employees">
+    </mat-paginator>
   </div>
-</div>

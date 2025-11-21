@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boxcorner.boxcorner.config.CorsConfig;
 import com.boxcorner.boxcorner.dto.LoginRequest;
 import com.boxcorner.boxcorner.dto.RegisterRequest;
 import com.boxcorner.boxcorner.entity.User;
@@ -23,7 +24,7 @@ import com.boxcorner.boxcorner.security.jwt.JwtUtils;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = CorsConfig.FRONTEND_URL)
 public class AuthController {
 
     @Autowired private AuthenticationManager authenticationManager;

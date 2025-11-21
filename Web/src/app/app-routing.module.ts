@@ -32,7 +32,15 @@ const routes: Routes = [
         loadComponent: () => import('./demo/other/sample-page/sample-page.component').then((c) => c.SamplePageComponent)
       },
       {
-        path: 'docsystem',
+        path: 'Dcsm01Detail/:id',
+        loadComponent: () => import('./demo/forms/dcsm01-detail.component').then((c) => c.Dcsm01DetailComponent)
+      },
+      {
+        path: 'Dcsm01Detail',
+        loadComponent: () => import('./demo/forms/dcsm01-detail.component').then((c) => c.Dcsm01DetailComponent)
+      },
+      {
+        path: 'Dcsm01',
         loadComponent: () => import('./demo/forms/dcsm01.component').then((c) => c.Dcsm01Component)
       }
     ]

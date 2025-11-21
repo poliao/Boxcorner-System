@@ -20,8 +20,6 @@ export class NavRightComponent implements OnInit {
 
   ngOnInit() {
     const user = this.authService.getUserFromToken();
-    console.log(user);
-    
     if (user) {
       this.userName = user.sub ;
     }

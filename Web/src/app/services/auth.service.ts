@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -30,8 +31,7 @@ export class AuthService {
     if (!token) return null;
     
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload;
+      return jwtDecode(token);
     } catch {
       return null;
     }
@@ -40,14 +40,17 @@ export class AuthService {
   isTokenValid(): boolean {
     const token = this.getToken();
     if (!token) return false;
-    
+
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp * 1000 > Date.now();
-    } catch {
-      return false;
+        const decoded: any = jwtDecode(token);
+        if (!decoded.exp) return false;
+        const currentTime = Date.now() / 1000;
+        return decoded.exp > currentTime;
+        
+    } catch (error) {
+        return false;
     }
-  }
+}
 
   logout(): void {
     localStorage.removeItem('token');

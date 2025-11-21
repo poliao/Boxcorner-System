@@ -41,7 +41,6 @@ export class LoginComponent implements OnInit {
       
       this.authService.login({ username, password }).subscribe({
         next: (response) => {
-          console.log('Login successful:', response);
           this.sweetAlert.success('Login', 'Login successful!');
           this.router.navigate(['/default']);
         },
