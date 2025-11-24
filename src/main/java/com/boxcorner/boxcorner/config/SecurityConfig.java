@@ -15,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.boxcorner.boxcorner.security.jwt.JwtAuthFilter;
 
@@ -29,6 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // ปิด CSRF เพราะใช้ Stateless Token
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // เปิดใช้ CORS
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll() // อนุญาตให้เข้าหน้า Login/Register ได้เลย
                 .anyRequest().authenticated() // หน้าอื่นๆ ต้อง Login ก่อน
@@ -58,5 +62,19 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // เข้ารหัส Password
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // configuration.addAllowedOrigin("http://localhost:4200"); //localhost
+        configuration.addAllowedOrigin("http://localhost"); //production
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

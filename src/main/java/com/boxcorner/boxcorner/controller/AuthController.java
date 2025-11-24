@@ -9,13 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.boxcorner.boxcorner.config.CorsConfig;
 import com.boxcorner.boxcorner.dto.LoginRequest;
 import com.boxcorner.boxcorner.dto.RegisterRequest;
 import com.boxcorner.boxcorner.entity.User;
@@ -24,7 +21,6 @@ import com.boxcorner.boxcorner.security.jwt.JwtUtils;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = CorsConfig.FRONTEND_URL)
 public class AuthController {
 
     @Autowired private AuthenticationManager authenticationManager;
