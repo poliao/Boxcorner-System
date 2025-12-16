@@ -28,10 +28,6 @@ const routes: Routes = [
         loadComponent: () => import('./demo/elements/element-color/element-color.component').then((c) => c.ElementColorComponent)
       },
       {
-        path: 'sample-page',
-        loadComponent: () => import('./demo/other/sample-page/sample-page.component').then((c) => c.SamplePageComponent)
-      },
-      {
         path: 'Dcsm01Detail/:id',
         loadComponent: () => import('./demo/forms/dcsm01-detail.component').then((c) => c.Dcsm01DetailComponent)
       },

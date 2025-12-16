@@ -20,7 +20,7 @@ import com.boxcorner.boxcorner.repository.UserRepository;
 import com.boxcorner.boxcorner.security.jwt.JwtUtils;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/auth")
 public class AuthController {
 
     @Autowired private AuthenticationManager authenticationManager;

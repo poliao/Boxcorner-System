@@ -1,50 +1,96 @@
-<div class="card-body">
-  <div class="card total-income-card warning overflow-hidden">
-    <div class="position">
-      <button (click)="onSubmit()" type="button" class="btn btn-primary">บันทึก</button>
-    </div>
-    <div class="padding">
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="inputEmail4" class="form-label">Email</label>
-          <input type="email" class="form-control" id="inputEmail4">
-        </div>
-        <div class="col-md-6">
-          <label for="inputPassword4" class="form-label">Password</label>
-          <input type="password" class="form-control" id="inputPassword4">
-        </div>
-        <div class="col-12">
-          <label for="inputAddress" class="form-label">Address</label>
-          <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
-        </div>
-        <div class="col-12">
-          <label for="inputAddress2" class="form-label">Address 2</label>
-          <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
-        </div>
-        <div class="col-md-6">
-          <label for="inputCity" class="form-label">City</label>
-          <input type="text" class="form-control" id="inputCity">
-        </div>
-        <div class="col-md-4">
-          <label for="inputState" class="form-label">State</label>
-          <select id="inputState" class="form-select">
-            <option selected>Choose...</option>
-            <option>...</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label for="inputZip" class="form-label">Zip</label>
-          <input type="text" class="form-control" id="inputZip">
-        </div>
-        <div class="col-12">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="gridCheck">
-            <label class="form-check-label" for="gridCheck">
-              Check me out
-            </label>
+<form [formGroup]="docForm" (ngSubmit)="onSubmit()">
+  <div class="card-body">
+    <div class="card total-income-card warning overflow-hidden">
+      <div class="position">
+        <button type="submit" class="btn btn-primary">บันทึก</button>
+      </div>
+      <div class="padding">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">รหัสสูตรตั้งต้น</label>
+            <input type="text" class="form-control" formControlName="recipeId">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">รหัสงาน</label>
+            <input type="text" class="form-control" formControlName="jobId">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">ชื่องาน</label>
+            <input type="text" class="form-control" formControlName="jobName">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">วันที่อัพเดท</label>
+            <input type="text" class="form-control" formControlName="updateDate" placeholder="วว/ดด/ปปปป">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">พนักงานที่อัพเดตล่าสุด</label>
+            <input type="text" class="form-control" formControlName="updateBy" placeholder="ชื่อพนักงาน">
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+  <form [formGroup]="docForm" (ngSubmit)="onSubmit()">
+    <div class="card-body">
+      <div class="card total-income-card warning overflow-hidden">
+        <div class="padding">
+
+          <h5 class="card-title mb-3">รายการผสมสี</h5>
+
+          <div class="row bg-light p-2 fw-bold border border-bottom-0 d-none d-md-flex text-center">
+            <div class="col-md-5">สี</div>
+            <div class="col-md-3">น้ำหนัก</div>
+            <div class="col-md-3">Lot</div>
+            <div class="col-md-1">ลบ</div>
+          </div>
+
+          <div formArrayName="colors">
+            <div *ngFor="let item of colorForms.controls; let i = index" [formGroupName]="i"
+              class="row border p-3 mb-2 mb-md-0 align-items-center bg-white shadow-sm shadow-md-none rounded-3 rounded-md-0">
+
+              <div class="col-12 col-md-5 mb-2 mb-md-0">
+                <label class="d-md-none form-label text-muted small">สี</label> <input type="text" class="form-control"
+                  formControlName="color" placeholder="ระบุสี">
+              </div>
+
+              <div class="col-6 col-md-3 mb-2 mb-md-0">
+                <label class="d-md-none form-label text-muted small">น้ำหนัก</label>
+                <input type="number" class="form-control" formControlName="weight" placeholder="0">
+              </div>
+
+              <div class="col-6 col-md-3 mb-2 mb-md-0">
+                <label class="d-md-none form-label text-muted small">Lot</label>
+                <input type="text" class="form-control" formControlName="lot" placeholder="Lot">
+              </div>
+
+              <div class="col-12 col-md-1 text-end text-md-center">
+                <hr class="d-md-none my-2 text-muted">
+                <button type="button" class="btn btn-outline-danger w-100 d-md-inline-block px-3"
+                  (click)="removeColorItem(i)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    viewBox="0 0 16 16">
+                    <path
+                      d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                    <path
+                      d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                  </svg>
+
+                  <span class="d-md-none ms-2">ลบ</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="text-start mt-3">
+            <button type="button" class="btn btn-success w-100 w-md-auto" (click)="addColorItem()">
+              <i class="fa fa-plus"></i> เพิ่มรายการสี
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </form>
+</form>

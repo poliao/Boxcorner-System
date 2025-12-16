@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import { LoadingService } from 'src/app/demo/loadingservice/loading';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,7 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private sweetAlert: SweetAlertService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private sweetAlert: SweetAlertService,private loadingService: LoadingService) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -38,13 +39,15 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     if (this.loginForm.value != null) {
       const { username, password } = this.loginForm.value;
-      
+      this.loadingService.show();
       this.authService.login({ username, password }).subscribe({
         next: (response) => {
           this.sweetAlert.success('Login', 'Login successful!');
+          this.loadingService.hide();
           this.router.navigate(['/default']);
         },
         error: (error) => {
+          this.loadingService.hide();
           this.sweetAlert.error('Login', 'Login failed!');
         }
       });

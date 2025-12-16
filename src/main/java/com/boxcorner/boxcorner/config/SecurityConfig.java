@@ -34,7 +34,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // ปิด CSRF เพราะใช้ Stateless Token
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // เปิดใช้ CORS
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll() // อนุญาตให้เข้าหน้า Login/Register ได้เลย
+                .requestMatchers("api/auth/**").permitAll() // อนุญาตให้เข้าหน้า Login/Register ได้เลย
                 .anyRequest().authenticated() // หน้าอื่นๆ ต้อง Login ก่อน
             )
             .sessionManagement(sess -> sess
@@ -67,8 +67,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // configuration.addAllowedOrigin("http://localhost:4200"); //localhost
-        configuration.addAllowedOrigin("http://localhost"); //production
+        configuration.addAllowedOrigin("http://localhost:4200"); //localhost
+        // configuration.addAllowedOrigin("http://localhost"); //production
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
