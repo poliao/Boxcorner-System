@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './theme/layout/admin/admin.component';
 import { GuestComponent } from './theme/layout/guest/guest.component';
 import { AuthGuard } from './guards/auth.guard';
+import { Dcsm01DetailResolver } from './demo/forms/dcsm01-detail.resolver'; // 1. Import Resolver
 
 const routes: Routes = [
   {
@@ -28,11 +29,14 @@ const routes: Routes = [
         loadComponent: () => import('./demo/elements/element-color/element-color.component').then((c) => c.ElementColorComponent)
       },
       {
-        path: 'Dcsm01Detail/:id',
-        loadComponent: () => import('./demo/forms/dcsm01-detail.component').then((c) => c.Dcsm01DetailComponent)
+        path: 'Dcsm01Detail/:id', // กรณีแก้ไข (มี ID)
+        loadComponent: () => import('./demo/forms/dcsm01-detail.component').then((c) => c.Dcsm01DetailComponent),
+        resolve: { 
+          recipeData: Dcsm01DetailResolver // 2. ผูก Resolver ไว้ที่นี่
+        }
       },
       {
-        path: 'Dcsm01Detail',
+        path: 'Dcsm01Detail', // กรณีเพิ่มใหม่ (ไม่มี ID)
         loadComponent: () => import('./demo/forms/dcsm01-detail.component').then((c) => c.Dcsm01DetailComponent)
       },
       {

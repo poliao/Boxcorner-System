@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 // ต้อง import FormArray ด้วยครับ
-import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms'; 
+import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/services/auth.service';
+import { Dcsm01Service } from 'src/app/demo/forms/dcsm01.service';
+import { LoadingService } from '../loadingservice/loading';
+import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import { count } from 'rxjs';
 
 @Component({
   selector: 'app-docsystem',
@@ -12,62 +16,235 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./dcsm01-detail.component.scss']
 })
 export class Dcsm01DetailComponent implements OnInit {
-  
-  docForm: FormGroup; // เปลี่ยนชื่อจาก loginForm เป็น docForm เพื่อให้สื่อความหมาย
+
+  docForm: FormGroup;
+  totalWeight: number = 0;
+  dbFormulaItems: any[] = [];
+  dbTotalWeight: number = 0;
+  recipe: any;
+  isUpdateMode: boolean = false;
+  calculatedColors: any[] = [];
+  calculatedTotalWeight: number = 0;
 
   constructor(
-    private fb: FormBuilder, 
-    private authService: AuthService, 
-    private router: Router, 
-    private route: ActivatedRoute
-  ) {
-    // สร้าง Form โดยมีส่วนหัว และส่วนรายการสี (FormArray)
-    this.docForm = this.fb.group({
-      recipeId: [''],    // รหัสสูตรตั้งต้น
-      jobId: [''],       // รหัสงาน
-      jobName: [''],     // ชื่องาน
-      updateDate: [''],  // วันที่อัพเดท
-      updateBy: [''],    // พนักงานที่อัพเดตล่าสุด
-      colors: this.fb.array([]) // สร้าง array เปล่าๆ สำหรับเก็บรายการสี
-    });
-  }
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private dcsm01Service: Dcsm01Service,
+    private loadingService: LoadingService,
+    private sweetAlert: SweetAlertService
+  ) { }
 
   ngOnInit() {
-    const employeeId = this.route.snapshot.paramMap.get('id');
-    console.log('Employee ID:', employeeId);
+    const defaultColors = ['ขาว', 'M', 'C', 'Y'];
+    this.createMainForm();
 
-    // เริ่มต้นให้มี Input สีโผล่มา 1 แถวเสมอ (ถ้าต้องการ)
-    this.addColorItem();
+    defaultColors.forEach(item => {
+      this.addColorItem(item);
+    });
+
+    this.colorForms.valueChanges.subscribe(() => {
+      this.calculateTotalWeight();
+      this.calresult();
+    });
+    this.loadDbData();
+
+    this.route.data.subscribe((data) => {
+      this.recipe = data['recipeData'];
+      if (this.recipe) {
+        this.patchDataToForm(this.recipe);
+      }
+    });
+    if (this.docForm.getRawValue().recipeid) {
+      this.isUpdateMode = true;
+    }
   }
 
-  // --- จัดการ FormArray (Colors) ---
-
-  // Getter เพื่อให้เรียกใช้ใน HTML ได้ง่ายๆ (ชื่อตัวแปร colorForms)
   get colorForms(): FormArray {
     return this.docForm.get('colors') as FormArray;
   }
+  calculateTotalWeight() {
+    const items = this.colorForms.getRawValue();
+    this.totalWeight = items.reduce((sum: number, item: any) => {
+      return sum + (Number(item.weight) || 0);
+    }, 0);
+  }
 
-  // ฟังก์ชันสร้าง FormGroup ของแต่ละแถว
-  createColorItem(): FormGroup {
+  createMainForm() {
+    this.docForm = this.fb.group({
+      recipeid: [null],
+      jobid: [null, [Validators.required, Validators.maxLength(100)]],
+      jobname: [null, [Validators.maxLength(100)]],
+      updatedate: [null],
+      updateby: [null],
+      reqtotalweight: [null, [Validators.maxLength(10), Validators.pattern('^[0-9]*$')]],
+      lightness: [null],
+      greenred: [null],
+      blueyellow: [null],
+
+      colors: this.fb.array([])
+    })
+    this.docForm.controls['recipeid'].disable({ emitEvent: false });
+    this.docForm.controls['updatedate'].disable({ emitEvent: false });
+    this.docForm.controls['updateby'].disable({ emitEvent: false });
+  }
+
+  createColorItem(defaultColor: string = ''): FormGroup {
     return this.fb.group({
-      color: ['', Validators.required], // ใส่ Validators ได้ตามต้องการ
-      weight: ['', Validators.required],
+      color: [defaultColor, Validators.required],
+      weight: [null, [Validators.required, Validators.maxLength(10), Validators.pattern('^[a-zA-Z0-9]*$')]],
       lot: ['']
     });
   }
 
-  // ฟังก์ชันเพิ่มแถวใหม่ (+)
-  addColorItem() {
-    this.colorForms.push(this.createColorItem());
+  addColorItem(defaultColor?: string) {
+    this.colorForms.push(this.createColorItem(defaultColor));
   }
 
-  // ฟังก์ชันลบแถว (Trash icon)
   removeColorItem(index: number) {
     this.colorForms.removeAt(index);
   }
 
-  // --- Submit ---
   onSubmit() {
-    console.log(this.docForm.value); // จะได้ข้อมูล JSON ทั้งหมดรวมถึง Array สี
+    if (this.docForm.invalid) {
+      this.docForm.markAllAsTouched();
+      this.sweetAlert.warning('Warning', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+    this.loadingService.show();
+    console.log(this.docForm.getRawValue());
+    
+    this.dcsm01Service.save(this.docForm.getRawValue()).subscribe({
+
+      next: (res: any) => {
+        this.docForm.patchValue({
+          recipeid: res.recipeid,
+          jobid: res.jobid,
+          jobname: res.jobname,
+          updatedate: res.updatedate,
+          updateby: res.updateby
+        });
+
+        const colorControl = this.docForm.get('colors') as FormArray;
+
+        colorControl.clear();
+
+        if (res.colors && Array.isArray(res.colors)) {
+          res.colors.forEach((item: any) => {
+            const newRow = this.createColorItem();
+
+            newRow.patchValue({
+              color: item.colorname,
+              weight: item.weight,
+              lot: item.lot
+            });
+
+            colorControl.push(newRow);
+          });
+        }
+
+        this.calculateTotalWeight();
+        this.loadingService.hide();
+        this.isUpdateMode = true;
+        this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+
+      },
+      error: (err) => {
+        console.error('Save Error:', err);
+        alert('เกิดข้อผิดพลาด: ' + (err.error || err.message));
+      }
+    });
+  }
+
+  loadDbData() {
+    const dataFromDb = [
+      { color: 'ขาว', weight: 50, lot: 'L001' },
+      { color: 'แดง', weight: 25.50, lot: 'L002' },
+      { color: 'เหลือง', weight: 10.25, lot: 'L003' }
+    ];
+
+    this.dbFormulaItems = dataFromDb;
+
+    this.calculateDbTotal();
+  }
+
+  calculateDbTotal() {
+    let sum = 0;
+    for (const item of this.dbFormulaItems) {
+      sum += Number(item.weight) || 0;
+    }
+    this.dbTotalWeight = Number(sum.toFixed(2));
+  }
+
+  patchDataToForm(recipe: any) {
+    this.docForm.patchValue({
+      recipeid: recipe.recipeid,
+      jobid: recipe.jobid,
+      jobname: recipe.jobname,
+      updatedate: recipe.updatedate,
+      updateby: recipe.updateby,
+      reqtotalweight: recipe.reqtotalweight,
+      lightness: recipe.lightness, 
+      greenred: recipe.greenred,
+      blueyellow: recipe.blueyellow
+    });
+
+    const colorControl = this.docForm.get('colors') as FormArray;
+    colorControl.clear();
+
+    if (recipe.colors && Array.isArray(recipe.colors)) {
+      recipe.colors.forEach((item: any) => {
+        const newRow = this.createColorItem();
+        newRow.patchValue({
+          color: item.colorname,
+          weight: item.weight,
+          lot: item.lot
+        });
+        colorControl.push(newRow);
+      });
+    }
+
+    this.calculateTotalWeight();
+    this.calresult();
+  }
+
+
+  calresult() {
+    const reqTotal = Number(this.docForm.get('reqtotalweight')?.value) || 0;
+    
+    const currentTotal = this.totalWeight;
+
+    if (currentTotal === 0 || reqTotal === 0) {
+      this.calculatedColors = [];
+      this.calculatedTotalWeight = 0;
+      return;
+    }
+
+    const ratio = reqTotal / currentTotal;
+    const currentItems = this.colorForms.getRawValue();
+    this.calculatedColors = currentItems.map((item: any) => {
+      const originalWeight = Number(item.weight) || 0;
+      const newWeight = originalWeight * ratio;
+
+      return {
+        color: item.color,
+        weight: Number(newWeight.toFixed(2)), 
+        lot: item.lot
+      };
+    });
+
+    const sum = this.calculatedColors.reduce((acc, curr) => acc + curr.weight, 0);
+    this.calculatedTotalWeight = Number(sum.toFixed(2));
+  }
+
+  get labColorString(): string {
+    const l = this.docForm.get('lightness')?.value;
+    const a = this.docForm.get('greenred')?.value;
+    const b = this.docForm.get('blueyellow')?.value;
+
+    if (l === null || a === null || b === null) {
+      return '#f0f0f0'; 
+    }
+
+    return `lab(${l} ${a} ${b})`;
   }
 }
