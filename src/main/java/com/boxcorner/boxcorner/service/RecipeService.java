@@ -41,7 +41,7 @@ public class RecipeService {
 
     @Transactional
       public Map<String, Object> save(Recipe recipe, List<Colors> colors, String currentUser) {
-        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd--MM--yyyy HH:mm:ss"));
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
         
         if (recipe.getRecipeid() == null || recipe.getRecipeid().isEmpty()) {
             recipe.setRecipeid(generateNextRecipeId());

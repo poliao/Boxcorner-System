@@ -16,8 +16,8 @@ public class Recipe {
     private String jobname;
     private String updatedate;
     private String updateby;
-    private String reqtotalweight;
-    private String lightness;
-    private String greenred;
-    private String blueyellow;
+    private Integer reqtotalweight;
+    private Integer lightness;
+    private Integer greenred;
+    private Integer blueyellow;
 }

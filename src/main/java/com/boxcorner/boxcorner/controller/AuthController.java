@@ -31,7 +31,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // 1. ให้ Spring Security ตรวจสอบ User/Pass
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(), 
@@ -39,10 +38,8 @@ public class AuthController {
                 )
             );
 
-            // 2. ถ้าผ่าน ให้สร้าง Token
             String token = jwtUtils.generateToken(loginRequest.getUsername());
             
-            // 3. ส่ง Token กลับไป
             return ResponseEntity.ok(Collections.singletonMap("token", token));
 
         } catch (AuthenticationException e) {
@@ -52,20 +49,14 @@ public class AuthController {
 
     @PostMapping("/register/admin")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        // 1. เช็คก่อนว่า Username ซ้ำไหม
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("Error: Username is already taken!");
         }
-
-        // 2. สร้าง User ใหม่
         User newUser = new User();
         newUser.setUsername(request.getUsername());
-        
-        // **จุดสำคัญที่สุด**: ต้องเข้ารหัส Password ก่อนบันทึก
+
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         
-        // 3. กำหนด Role (ถ้าไม่ส่งมา ให้เป็น User ธรรมดา)
-       
         newUser.setRole("ROLE_USER");
     
         userRepository.save(newUser);

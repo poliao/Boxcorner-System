@@ -10,15 +10,17 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // ตรวจสอบ token ก่อนส่ง request
-    if (!this.authService.isTokenValid()) {
+    // Skip token validation for login and register endpoints
+    const isAuthEndpoint = req.url.includes('/auth/login') || req.url.includes('/auth/register');
+    
+    if (!isAuthEndpoint && !this.authService.isTokenValid()) {
       this.authService.logout();
       this.router.navigate(['/login']);
       return throwError(() => new Error('Token expired'));
     }
 
     const token = this.authService.getToken();
-    if (token) {
+    if (token && !isAuthEndpoint) {
       req = req.clone({
         setHeaders: { Authorization: `Bearer ${token}` }
       });

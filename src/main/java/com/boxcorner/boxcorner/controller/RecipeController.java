@@ -32,17 +32,17 @@ public class RecipeController {
             recipe.setRecipeid((String) request.get("recipeid"));
             recipe.setJobid((String) request.get("jobid"));
             recipe.setJobname((String) request.get("jobname"));
-            recipe.setReqtotalweight((String) request.get("reqtotalweight"));
-            recipe.setLightness((String) request.get("lightness"));
-            recipe.setGreenred((String) request.get("greenred"));
-            recipe.setBlueyellow((String) request.get("blueyellow"));
+            recipe.setReqtotalweight((Integer) request.get("reqtotalweight"));
+            recipe.setLightness((Integer) request.get("lightness"));
+            recipe.setGreenred((Integer) request.get("greenred"));
+            recipe.setBlueyellow((Integer) request.get("blueyellow"));
             
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> colorData = (List<Map<String, Object>>) request.get("colors");
             List<Colors> colors = colorData.stream().map(colorMap -> {
                 Colors color = new Colors();
                 color.setColorname((String) colorMap.get("color"));
-                color.setWeight(String.valueOf(colorMap.get("weight")));
+                color.setWeight((Integer) colorMap.get("weight"));
                 color.setLot((String) colorMap.get("lot"));
                 return color;
             }).toList();

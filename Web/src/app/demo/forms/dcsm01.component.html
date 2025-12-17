@@ -56,13 +56,16 @@
 
   <!-- Mobile Cards -->
   <div class="mobile-cards">
-    <div class="employee-card" *ngFor="let row of dataSource.data">
+    <div class="recipe-card" *ngFor="let row of dataSource.data">
       <div class="card-header">
-        <span class="employee-id">{{row.recipeid}}</span>
+        <span class="recipe-id" (click)="goToDetail(row.recipeid)">{{row.recipeid}}</span>
       </div>
       <div class="card-content">
-        <div class="employee-name">{{row.jobid}}</div>
-        <div class="employee-info">
+        <div class="recipe-info">
+          <div class="info-item">
+            <span class="label">รหัสงาน:</span>
+            <span class="value">{{row.jobid}}</span>
+          </div>
           <div class="info-item">
             <span class="label">ชื่องาน:</span>
             <span class="value">{{row.jobname}}</span>

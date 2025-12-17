@@ -26,7 +26,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-   
+    // Clear expired token on login page
+    if (!this.authService.isTokenValid()) {
+      this.authService.logout();
+    }
   }
 
   onPasswordKeyPress(event: KeyboardEvent) {
@@ -47,6 +50,8 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/default']);
         },
         error: (error) => {
+          console.log(error);
+          
           this.loadingService.hide();
           this.sweetAlert.error('Login', 'Login failed!');
         }

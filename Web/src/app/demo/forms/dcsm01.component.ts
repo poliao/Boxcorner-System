@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { Dcsm01Service } from 'src/app/demo/forms/dcsm01.service'; // Import Service
+import { LoadingService } from '../loadingservice/loading';
 
 // ปรับ Interface ให้ตรงกับข้อมูลจริงจาก Java (Recipe)
 interface Recipe {
@@ -52,7 +53,8 @@ export class Dcsm01Component implements OnInit, AfterViewInit {
     private fb: FormBuilder, 
     private authService: AuthService, 
     private router: Router,
-    private dcsm01Service: Dcsm01Service 
+    private dcsm01Service: Dcsm01Service ,
+    private loadingService: LoadingService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.email]],
@@ -62,7 +64,9 @@ export class Dcsm01Component implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+
     this.loadData();
+    
   }
 
   ngAfterViewInit() {
@@ -74,16 +78,20 @@ export class Dcsm01Component implements OnInit, AfterViewInit {
   }
 
   loadData() {
+    this.loadingService.show();
     this.dcsm01Service.getAllRecipes(this.filterValue, this.pageIndex, this.pageSize)
       .subscribe({
         next: (response: any) => {
           this.dataSource.data = response.content;
           this.totalElements = response.totalElements;
+          this.loadingService.hide();
         },
         error: (err) => {
           console.error('Error loading data', err);
+          this.loadingService.hide();
         }
       });
+      
   }
 
   getDisplayedColumns(): string[] {

@@ -13,7 +13,7 @@ public class Colors {
     private String colorid;
     private String recipeid;
     private String colorname;
-    private String weight;
+    private Integer weight;
     private String lot;
     private String updatedate;
     private String updateby;
