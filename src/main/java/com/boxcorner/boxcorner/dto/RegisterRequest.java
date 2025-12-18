@@ -6,5 +6,5 @@ import lombok.Data;
 public class RegisterRequest {
     private String username;
     private String password;
-    private String role; // ส่งมาหรือไม่ก็ได้ เดี๋ยวเราตั้งค่า default ให้
+    private String role;
 }

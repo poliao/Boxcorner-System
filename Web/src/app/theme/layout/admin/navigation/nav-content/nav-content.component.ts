@@ -7,7 +7,8 @@ import { RouterModule } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
 // project import
-import { NavigationItem, NavigationItems } from '../navigation';
+import { NavigationItem } from '../navigation';
+import { MenuService } from 'src/app/services/menu.service';
 
 import { NavCollapseComponent } from './nav-collapse/nav-collapse.component';
 import { NavGroupComponent } from './nav-group/nav-group.component';
@@ -37,18 +38,30 @@ export class NavContentComponent implements OnInit {
   windowWidth: number;
 
   // Constructor
-  constructor() {
-    this.navigations = NavigationItems;
+  constructor(private menuService: MenuService) {
     this.windowWidth = window.innerWidth;
   }
 
   // Life cycle events
   ngOnInit() {
+    this.loadMenu();
     if (this.windowWidth < 1025) {
       setTimeout(() => {
         (document.querySelector('.coded-navbar') as HTMLDivElement).classList.add('menupos-static');
       }, 500);
     }
+  }
+
+  private loadMenu() {
+    this.menuService.getMenu().subscribe({
+      next: (menu) => {
+        this.navigations = menu;
+      },
+      error: (error) => {
+        console.error('Error loading menu:', error);
+        this.navigations = [];
+      }
+    });
   }
 
   fireOutClick() {
