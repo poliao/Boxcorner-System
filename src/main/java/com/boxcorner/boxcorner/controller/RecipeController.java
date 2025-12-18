@@ -58,12 +58,14 @@ public class RecipeController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getAllRecipes(
+            @RequestParam(required = false) String recipeid,
+            @RequestParam(required = false) String jobid,
             @RequestParam(required = false) String jobName, // คำค้นหา (Optional)
             @RequestParam(defaultValue = "0") int page,     // หน้าที่ต้องการ (เริ่มที่ 0)
             @RequestParam(defaultValue = "10") int size     // จำนวนต่อหน้า
     ) {
         try {
-            Page<Recipe> pageRecipes = recipeService.getAllRecipes(jobName, page, size);
+            Page<Recipe> pageRecipes = recipeService.getAllRecipes(recipeid, jobid, jobName, page, size);
             return ResponseEntity.ok(pageRecipes);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -79,5 +81,15 @@ public class RecipeController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/dropdownrecipe")
+    public ResponseEntity<List<String>> getUniqueRecipeIds(@RequestParam(defaultValue = "") String query){
+        return ResponseEntity.ok(recipeService.findUniqueRecipeIds(query));
+    }
+
+    @GetMapping("/dropdownjobid")
+    public ResponseEntity<List<String>> getfindUniqueJobIds(@RequestParam(defaultValue = "") String query){
+        return ResponseEntity.ok(recipeService.findUniqueJobIds(query));
     }
 }

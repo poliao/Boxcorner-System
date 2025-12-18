@@ -29,11 +29,10 @@ public class RecipeService {
     @Autowired
     private ColorsRepository colorsRepository;
 
-
-    public Page<Recipe> getAllRecipes(String jobName, int page, int size) {
+    public Page<Recipe> getAllRecipes(String recipeid,String jobid,String jobname, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("updatedate").descending());
-        if (jobName != null && !jobName.isEmpty()) {
-            return recipeRepository.findByJobnameContainingIgnoreCase(jobName, paging);
+        if (jobname != null && !jobname.isEmpty() || recipeid != null && !recipeid.isEmpty() || jobid != null && !jobid.isEmpty()) {
+            return recipeRepository.findByFilters( recipeid, jobid, jobname, paging);
         } else {
             return recipeRepository.findAll(paging);
         }
@@ -99,6 +98,18 @@ public class RecipeService {
         }
 
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> findUniqueRecipeIds(String query) {
+        String searchTerm = (query != null) ? query.trim() : "";
+        return recipeRepository.findUniqueRecipeIds(searchTerm);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> findUniqueJobIds(String query) {
+        String searchTerm = (query != null) ? query.trim() : "";
+        return recipeRepository.findUniqueJobIds(searchTerm);
     }
     
     private String generateNextRecipeId() {
