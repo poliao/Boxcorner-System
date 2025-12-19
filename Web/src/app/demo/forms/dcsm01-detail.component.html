@@ -36,44 +36,7 @@
     </div>
   </div>
   <!-- ================= เพิ่มส่วน LAB Color ================= -->
-  <div class="card-body">
-    <div class="card total-income-card warning overflow-hidden">
-      <div class="padding">
-        <h5 class="card-title mb-3">ค่าสี LAB และตัวอย่างสี</h5>
-        
-        <div class="row g-3 align-items-center">
-          
-          <div class="col-md-3">
-            <label class="form-label">ค่า L (Lightness)</label>
-            <input type="number" class="form-control" formControlName="lightness" placeholder="0 - 100">
-          </div>
-
-          <div class="col-md-3">
-            <label class="form-label">ค่า A (Green-Red)</label>
-            <input type="number" class="form-control" formControlName="greenred" placeholder="-128 ถึง 127">
-          </div>
-
-          <!-- ช่องกรอก B -->
-          <div class="col-md-3">
-            <label class="form-label">ค่า B (Blue-Yellow)</label>
-            <input type="number" class="form-control" formControlName="blueyellow" placeholder="-128 ถึง 127">
-          </div>
-
-          <!-- กล่องแสดงตัวอย่างสี -->
-          <div class="col-md-3 text-center">
-            <label class="form-label d-block">ตัวอย่างสี (Preview)</label>
-            <div class="color-preview-box shadow-sm border" 
-                 [style.background-color]="labColorString"
-                 style="height: 60px; width: 100%; border-radius: 8px; transition: background-color 0.3s;">
-            </div>
-            <!-- แสดงค่า Code สี -->
-            <small class="text-muted mt-1 d-block">{{ labColorString }}</small>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  </form>
+ 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
   <form [formGroup]="docForm" (ngSubmit)="onSubmit()">
     <div class="card-body">
@@ -184,4 +147,41 @@
     </div>
   </div>
 </div>
+ <div class="card-body">
+    <div class="card total-income-card warning overflow-hidden">
+      <div class="padding">
+        <h5 class="card-title mb-3">ค่าสี LAB และตัวอย่างสี</h5>
+        
+        <div class="row g-3 align-items-center">
+          
+          <div class="col-md-3">
+            <label class="form-label">ค่า L (Lightness)</label>
+            <input type="number" class="form-control" formControlName="lightness" placeholder="0 - 100">
+          </div>
 
+          <div class="col-md-3">
+            <label class="form-label">ค่า A (Green-Red)</label>
+            <input type="number" class="form-control" formControlName="greenred" placeholder="-128 ถึง 127">
+          </div>
+
+          <!-- ช่องกรอก B -->
+          <div class="col-md-3">
+            <label class="form-label">ค่า B (Blue-Yellow)</label>
+            <input type="number" class="form-control" formControlName="blueyellow" placeholder="-128 ถึง 127">
+          </div>
+
+          <!-- กล่องแสดงตัวอย่างสี -->
+          <div class="col-md-3 text-center">
+            <label class="form-label d-block">ตัวอย่างสี (Preview)</label>
+            <div class="color-preview-box shadow-sm border" 
+                 [style.background-color]="labColorString"
+                 style="height: 60px; width: 100%; border-radius: 8px; transition: background-color 0.3s;">
+            </div>
+            <!-- แสดงค่า Code สี -->
+            <small class="text-muted mt-1 d-block">{{ labColorString }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </form>

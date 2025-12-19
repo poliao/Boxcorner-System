@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -32,17 +33,17 @@ public class RecipeController {
             recipe.setRecipeid((String) request.get("recipeid"));
             recipe.setJobid((String) request.get("jobid"));
             recipe.setJobname((String) request.get("jobname"));
-            recipe.setReqtotalweight((Integer) request.get("reqtotalweight"));
-            recipe.setLightness((Integer) request.get("lightness"));
-            recipe.setGreenred((Integer) request.get("greenred"));
-            recipe.setBlueyellow((Integer) request.get("blueyellow"));
+            recipe.setReqtotalweight(request.get("reqtotalweight") != null ? new BigDecimal(request.get("reqtotalweight").toString()) : null);
+            recipe.setLightness(request.get("lightness") != null ? new BigDecimal(request.get("lightness").toString()) : null);
+            recipe.setGreenred(request.get("greenred") != null ? new BigDecimal(request.get("greenred").toString()) : null);
+            recipe.setBlueyellow(request.get("blueyellow") != null ? new BigDecimal(request.get("blueyellow").toString()) : null);
             
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> colorData = (List<Map<String, Object>>) request.get("colors");
             List<Colors> colors = colorData.stream().map(colorMap -> {
                 Colors color = new Colors();
                 color.setColorname((String) colorMap.get("color"));
-                color.setWeight((Integer) colorMap.get("weight"));
+                color.setWeight(colorMap.get("weight") != null ? new BigDecimal(colorMap.get("weight").toString()) : null);
                 color.setLot((String) colorMap.get("lot"));
                 return color;
             }).toList();

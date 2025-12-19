@@ -35,7 +35,7 @@ export class Dcsm01DetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const defaultColors = ['ขาว', 'M', 'C', 'Y'];
+    const defaultColors = ['M', 'C', 'Y', 'K'];
     this.createMainForm();
 
     defaultColors.forEach(item => {
@@ -64,9 +64,13 @@ export class Dcsm01DetailComponent implements OnInit {
   }
   calculateTotalWeight() {
     const items = this.colorForms.getRawValue();
-    this.totalWeight = items.reduce((sum: number, item: any) => {
-      return sum + (Number(item.weight) || 0);
+
+    const sumWeight = items.reduce((sum: number, item: any) => {
+      const weight = Number(item.weight) || 0; 
+      return sum + weight;
     }, 0);
+
+    this.totalWeight = Number(sumWeight.toFixed(2));
   }
 
   createMainForm() {
@@ -76,7 +80,7 @@ export class Dcsm01DetailComponent implements OnInit {
       jobname: [null, [Validators.maxLength(100)]],
       updatedate: [null],
       updateby: [null],
-      reqtotalweight: [null, [Validators.maxLength(10), Validators.pattern('^[0-9]*$')]],
+      reqtotalweight: [null, [Validators.maxLength(10), Validators.pattern('^\\d+(\\.\\d{1,2})?$')]],
       lightness: [null],
       greenred: [null],
       blueyellow: [null],
@@ -91,7 +95,7 @@ export class Dcsm01DetailComponent implements OnInit {
   createColorItem(defaultColor: string = ''): FormGroup {
     return this.fb.group({
       color: [defaultColor, Validators.required],
-      weight: [null, [Validators.required, Validators.maxLength(10), Validators.pattern('^[a-zA-Z0-9]*$')]],
+      weight: [null, [Validators.required, Validators.maxLength(10), Validators.pattern('^\\d+(\\.\\d{1,2})?$')]],
       lot: ['']
     });
   }
@@ -111,8 +115,7 @@ export class Dcsm01DetailComponent implements OnInit {
       return;
     }
     this.loadingService.show();
-    console.log(this.docForm.getRawValue());
-    
+
     this.dcsm01Service.save(this.docForm.getRawValue()).subscribe({
 
       next: (res: any) => {
@@ -157,9 +160,6 @@ export class Dcsm01DetailComponent implements OnInit {
 
   loadDbData() {
     const dataFromDb = [
-      { color: 'ขาว', weight: 50, lot: 'L001' },
-      { color: 'แดง', weight: 25.50, lot: 'L002' },
-      { color: 'เหลือง', weight: 10.25, lot: 'L003' }
     ];
 
     this.dbFormulaItems = dataFromDb;
@@ -183,7 +183,7 @@ export class Dcsm01DetailComponent implements OnInit {
       updatedate: recipe.updatedate,
       updateby: recipe.updateby,
       reqtotalweight: recipe.reqtotalweight,
-      lightness: recipe.lightness, 
+      lightness: recipe.lightness,
       greenred: recipe.greenred,
       blueyellow: recipe.blueyellow
     });
@@ -207,34 +207,41 @@ export class Dcsm01DetailComponent implements OnInit {
     this.calresult();
   }
 
-
   calresult() {
-    const reqTotal = Number(this.docForm.get('reqtotalweight')?.value) || 0;
-    
-    const currentTotal = this.totalWeight;
+  const reqTotal = Number(this.docForm.get('reqtotalweight')?.value) || 0;
+  const currentTotal = this.totalWeight;
 
-    if (currentTotal === 0 || reqTotal === 0) {
-      this.calculatedColors = [];
-      this.calculatedTotalWeight = 0;
-      return;
+  if (currentTotal === 0 || reqTotal === 0) {
+    this.calculatedColors = [];
+    this.calculatedTotalWeight = 0;
+    return;
+  }
+
+  const ratio = Number((reqTotal / currentTotal).toFixed(2)); 
+  
+  const currentItems = this.colorForms.getRawValue();
+  let runningSum = 0;
+
+  this.calculatedColors = currentItems.map((item: any, index: number) => {
+    const originalWeight = Number(item.weight) || 0;
+    let newWeight: number;
+
+    if (index === currentItems.length - 1) {
+      newWeight = Number((reqTotal - runningSum).toFixed(2));
+    } else {
+      newWeight = Number((originalWeight * ratio).toFixed(2));
+      runningSum += newWeight;
     }
 
-    const ratio = reqTotal / currentTotal;
-    const currentItems = this.colorForms.getRawValue();
-    this.calculatedColors = currentItems.map((item: any) => {
-      const originalWeight = Number(item.weight) || 0;
-      const newWeight = originalWeight * ratio;
+    return {
+      color: item.color,
+      weight: newWeight,
+      lot: item.lot
+    };
+  });
 
-      return {
-        color: item.color,
-        weight: Number(newWeight.toFixed(2)), 
-        lot: item.lot
-      };
-    });
-
-    const sum = this.calculatedColors.reduce((acc, curr) => acc + curr.weight, 0);
-    this.calculatedTotalWeight = Number(sum.toFixed(2));
-  }
+  this.calculatedTotalWeight = reqTotal;
+}
 
   get labColorString(): string {
     const l = this.docForm.get('lightness')?.value;
@@ -242,7 +249,7 @@ export class Dcsm01DetailComponent implements OnInit {
     const b = this.docForm.get('blueyellow')?.value;
 
     if (l === null || a === null || b === null) {
-      return '#f0f0f0'; 
+      return '#f0f0f0';
     }
 
     return `lab(${l} ${a} ${b})`;

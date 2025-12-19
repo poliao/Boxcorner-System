@@ -68,7 +68,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:4200"); //localhost
-        // configuration.addAllowedOrigin("http://localhost"); //production
+        configuration.addAllowedOrigin("https://restaurants-collection-funk-many.trycloudflare.com");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);

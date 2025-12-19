@@ -1,5 +1,7 @@
 package com.boxcorner.boxcorner.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -13,7 +15,7 @@ public class Colors {
     private String colorid;
     private String recipeid;
     private String colorname;
-    private Integer weight;
+    private BigDecimal weight;
     private String lot;
     private String updatedate;
     private String updateby;

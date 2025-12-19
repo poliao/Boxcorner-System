@@ -1,5 +1,7 @@
 package com.boxcorner.boxcorner.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -16,8 +18,8 @@ public class Recipe {
     private String jobname;
     private String updatedate;
     private String updateby;
-    private Integer reqtotalweight;
-    private Integer lightness;
-    private Integer greenred;
-    private Integer blueyellow;
+    private BigDecimal reqtotalweight;
+    private BigDecimal lightness;
+    private BigDecimal greenred;
+    private BigDecimal blueyellow;
 }
