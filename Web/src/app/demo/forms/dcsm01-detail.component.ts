@@ -244,14 +244,17 @@ export class Dcsm01DetailComponent implements OnInit {
 }
 
   get labColorString(): string {
-    const l = this.docForm.get('lightness')?.value;
-    const a = this.docForm.get('greenred')?.value;
-    const b = this.docForm.get('blueyellow')?.value;
+  // ดึงค่าและแปลงเป็น Number ทันที พร้อมใส่ค่า Default เป็น 0 หากเป็นค่าว่าง
+  const l = Number(this.docForm.get('lightness')?.value) || 0;
+  const a = Number(this.docForm.get('greenred')?.value) || 0;
+  const b = Number(this.docForm.get('blueyellow')?.value) || 0;
 
-    if (l === null || a === null || b === null) {
-      return '#f0f0f0';
-    }
-
-    return `lab(${l} ${a} ${b})`;
+  // ตรวจสอบว่ามีค่าครบหรือไม่ (ในที่นี้เช็ค l เพราะ Lightness มักไม่เป็นลบ)
+  if (this.docForm.get('lightness')?.value === null) {
+    return '#f0f0f0';
   }
+
+  // ส่งคืนค่าในรูปแบบ lab(L A B) ซึ่งรองรับทศนิยมโดยธรรมชาติใน CSS
+  return `lab(${l} ${a} ${b})`;
+}
 }
